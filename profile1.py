@@ -62,20 +62,20 @@ for i in range(15):
   
   node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/passwordless.sh"))
   node.addService(pg.Execute(shell="sh", command="sudo /local/repository/passwordless.sh"))  
-  node.addService(pg.Execute(shell="sh", command="sudo systemctl disable firewalld"))
   node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/ssh_setup.sh"))
   node.addService(pg.Execute(shell="sh", command="sudo -H -u DT882578 bash -c '/local/repository/ssh_setup.sh'"))
+  node.addService(pg.Execute(shell="sh", command="sudo systemctl disable firewalld"))
   node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c 'cp /local/repository/source/* /users/DT882578'"))
   
   #One NFS is originated from the head node, and supports a shared directory called /software.
   #One NFS is originated from the storage node, and supports a shared directory called /scratch
   if i == 0:
+ 
     node.addService(pg.Execute(shell="sh", command="sudo mkdir -m 755 /software"))
-    node.addService(pg.Execute(shell="sh", command="sudo mkdir /scratch"))
+    node.addService(pg.Execute(shell="sh", command="sudo mkdir /scratch"))   
     
-    node.addService(pg.Execute(shell="sh", command="sudo /local/repository/install_mpi.sh"))
     
-    # Enable and start nfs service
+    #nfs service
     node.addService(pg.Execute(shell="sh", command="sudo systemctl enable nfs-server.service"))
     node.addService(pg.Execute(shell="sh", command="sudo systemctl start nfs-server.service"))
     
@@ -84,14 +84,15 @@ for i in range(15):
     node.addService(pg.Execute(shell="sh", command="sudo cp /local/repository/exports_head /etc/exports"))
     node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /etc/exports"))
     node.addService(pg.Execute(shell="sh", command="sudo exportfs -a"))
+     node.addService(pg.Execute(shell="sh", command="sleep 2m"))
     
     # Mount /scratch folder hosted on "storage"
     node.addService(pg.Execute(shell="sh", command="sudo mount 192.168.1.3:/scratch /scratch"))
-    node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c \"echo '192.168.1.3:/scratch /scratch nfs defaults 0 0' >> /etc/fstab\""))
-    
+    node.addService(pg.Execute(shell="sh", command="sudo echo '192.168.1.3:/scratch /scratch nfs4 rw,relatime,vers=4.1,rsize=131072,wsize=131072,namlen=255,hard,proto=tcp,port=0,timeo=600,retrans=2,sec=sys,local_lock=none,addr=192.168.1.3,_netdev,x-systemd.automount 0 0' | sudo tee --append /etc/fstab"))
     
     # Install MPI
-    node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/install_mpi.sh"))
+    node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/scripts/install_mpi.sh"))
+    node.addService(pg.Execute(shell="sh", command="sudo /local/repository/scripts/install_mpi.sh"))
     
   if i == 2: # Storage
     # Create /scratch shared folder
@@ -111,18 +112,20 @@ for i in range(15):
   if i > 2: # Compute Nodes
     node.addService(pg.Execute(shell="sh", command="sudo mkdir /scratch"))
     node.addService(pg.Execute(shell="sh", command="sudo mkdir /software"))
+    node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /scratch"))
+    node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /software"))
     
     # Mount /scratch folder hosted on "storage"
     node.addService(pg.Execute(shell="sh", command="sudo mount 192.168.1.3:/scratch /scratch"))
-    node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c \"echo '192.168.1.3:/scratch /scratch nfs defaults 0 0' >> /etc/fstab\""))
+    node.addService(pg.Execute(shell="sh", command="sudo su nq666287 -c \"echo '192.168.1.3:/scratch /scratch nfs defaults 0 0' >> /etc/fstab\""))
 
     # Mount /software folder hosted on "head"
     node.addService(pg.Execute(shell="sh", command="sudo mount 192.168.1.1:/software /software"))
-    node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c \"echo '192.168.1.1:/software /software nfs defaults 0 0' >> /etc/fstab\""))
+    node.addService(pg.Execute(shell="sh", command="sudo su nq666287 -c \"echo '192.168.1.1:/software /software nfs defaults 0 0' >> /etc/fstab\""))
 
     # Add MPI to PATH
-    node.addService(pg.Execute(shell="sh", command="sudo echo 'export PATH=/software:$PATH' >> ~/.bashrc"))
-    node.addService(pg.Execute(shell="sh", command="source ~/.bashrc"))
+    node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /local/repository/scripts/mpi_path_setup.sh"))
+    node.addService(pg.Execute(shell="sh", command="sudo -H -u nq666287 bash -c '/local/repository/scripts/mpi_path_setup.sh'"))
       
       
     
@@ -130,6 +133,4 @@ for i in range(15):
   
 # Print the RSpec to the enclosing page.
 pc.printRequestRSpec(request)
-
-
 
