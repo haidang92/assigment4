@@ -62,15 +62,14 @@ for i in range(15):
   
   node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/passwordless.sh"))
   node.addService(pg.Execute(shell="sh", command="sudo /local/repository/passwordless.sh"))  
-  
-  # This code segment is added per Benjamin Walker's solution to address the StrictHostKeyCheck issue of ssh
+  node.addService(pg.Execute(shell="sh", command="sudo systemctl disable firewalld"))
   node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/ssh_setup.sh"))
   node.addService(pg.Execute(shell="sh", command="sudo -H -u DT882578 bash -c '/local/repository/ssh_setup.sh'"))
- 
-  node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c 'cp /local/repository/source/* /users/nq666287'"))
+  node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c 'cp /local/repository/source/* /users/DT882578'"))
   
-  if i == 0: # Head
-    # Create /software shared folder
+  #One NFS is originated from the head node, and supports a shared directory called /software.
+  #One NFS is originated from the storage node, and supports a shared directory called /scratch
+  if i == 0:
     node.addService(pg.Execute(shell="sh", command="sudo mkdir -m 755 /software"))
     node.addService(pg.Execute(shell="sh", command="sudo mkdir /scratch"))
     
