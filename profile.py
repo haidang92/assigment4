@@ -77,7 +77,15 @@ for i in range(15):
     node.addService(pg.Execute(shell="sh", command="sudo exportfs -a"))
 
   elif i == 2:
-    node = request.XenVM("storage")   
+    node = request.XenVM("storage")
+  else:
+    node = request.XenVM("compute-" + str(i-2))
+    node.cores = 2
+    node.ram = 4096
+    node.addService(pg.Execute(shell="sh", command="sudo mkdir /scratch"))
+    node.addService(pg.Execute(shell="sh", command="sudo mkdir /software"))
+    node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /scratch"))
+    node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /software"))
 
     
     
@@ -96,14 +104,7 @@ for i in range(15):
   node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c 'cp /local/repository/source/* /users/DT882578'"))
   
   
- else:
-   node = request.XenVM("compute-" + str(i-2))
-   node.cores = 2
-   node.ram = 4096
-   node.addService(pg.Execute(shell="sh", command="sudo mkdir /scratch"))
-   node.addService(pg.Execute(shell="sh", command="sudo mkdir /software"))
-   node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /scratch"))
-   node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /software"))
+ if i > 2:
     
   # Mount 
    node.addService(pg.Execute(shell="sh", command="sudo mount 192.168.1.3:/scratch /scratch"))
