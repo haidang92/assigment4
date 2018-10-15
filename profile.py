@@ -67,6 +67,9 @@ for i in range(15):
     node = request.XenVM("metadata")
     node.addService(pg.Execute(shell="sh", command="sudo mkdir -m 755 /scratch"))
     
+    
+  elif i == 2:
+    node = request.XenVM("storage")
     # nfs service
     node.addService(pg.Execute(shell="sh", command="sudo systemctl enable nfs-server.service"))
     node.addService(pg.Execute(shell="sh", command="sudo systemctl start nfs-server.service"))
@@ -76,12 +79,25 @@ for i in range(15):
     node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /etc/exports"))
     node.addService(pg.Execute(shell="sh", command="sudo exportfs -a"))
 
-  elif i == 2:
-    node = request.XenVM("storage")
   else:
     node = request.XenVM("compute-" + str(i-2))
     node.cores = 2
     node.ram = 4096
+  node.disk_image = "urn:publicid:IDN+emulab.net+image+emulab-ops:CENTOS7-64-STD"
+  
+  iface = node.addInterface("if" + str(i))
+  iface.component_id = "eth1"
+  iface.addAddress(pg.IPv4Address(prefixForIP + str(i + 1), "255.255.255.0"))
+  link.addInterface(iface)
+  
+  node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/passwordless.sh"))
+  node.addService(pg.Execute(shell="sh", command="sudo /local/repository/passwordless.sh"))  
+  node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/ssh_setup.sh"))
+  node.addService(pg.Execute(shell="sh", command="sudo -H -u DT882578 bash -c '/local/repository/ssh_setup.sh'"))
+  node.addService(pg.Execute(shell="sh", command="sudo systemctl disable firewalld"))
+  node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c 'cp /local/repository/source/* /users/DT882578'"))
+ 
+  if i > 2:
     node.addService(pg.Execute(shell="sh", command="sudo mkdir /scratch"))
     node.addService(pg.Execute(shell="sh", command="sudo mkdir /software"))
     node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /scratch"))
@@ -99,19 +115,7 @@ for i in range(15):
 
     
 
-  node.disk_image = "urn:publicid:IDN+emulab.net+image+emulab-ops:CENTOS7-64-STD"
   
-  iface = node.addInterface("if" + str(i))
-  iface.component_id = "eth1"
-  iface.addAddress(pg.IPv4Address(prefixForIP + str(i + 1), "255.255.255.0"))
-  link.addInterface(iface)
-  
-  node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/passwordless.sh"))
-  node.addService(pg.Execute(shell="sh", command="sudo /local/repository/passwordless.sh"))  
-  node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/ssh_setup.sh"))
-  node.addService(pg.Execute(shell="sh", command="sudo -H -u DT882578 bash -c '/local/repository/ssh_setup.sh'"))
-  node.addService(pg.Execute(shell="sh", command="sudo systemctl disable firewalld"))
-  node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c 'cp /local/repository/source/* /users/DT882578'"))
   
  
   
