@@ -63,11 +63,11 @@ for i in range(15):
     node.addService(pg.Execute(shell="sh", command="sudo echo '192.168.1.3:/scratch /scratch nfs4 rw,relatime,vers=4.1,rsize=131072,wsize=131072,namlen=255,hard,proto=tcp,port=0,timeo=600,retrans=2,sec=sys,local_lock=none,addr=192.168.1.3,_netdev,x-systemd.automount 0 0' | sudo tee --append /etc/fstab"))
     
     
-  elif i == 1:
+  if i == 1:
     node = request.XenVM("metadata")
     
 
-  elif i == 2:
+  if i == 2:
     node = request.XenVM("storage")  
     node.addService(pg.Execute(shell="sh", command="sudo mkdir -m 755 /scratch"))
     
@@ -97,7 +97,7 @@ for i in range(15):
   node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c 'cp /local/repository/source/* /users/DT882578'"))
   
   
- else:
+ if i > 2:
    node = request.XenVM("compute-" + str(i-2))
    node.cores = 2
    node.ram = 4096
