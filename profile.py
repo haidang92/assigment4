@@ -63,12 +63,12 @@ for i in range(15):
     node.addService(pg.Execute(shell="sh", command="sudo echo '192.168.1.3:/scratch /scratch nfs4 rw,relatime,vers=4.1,rsize=131072,wsize=131072,namlen=255,hard,proto=tcp,port=0,timeo=600,retrans=2,sec=sys,local_lock=none,addr=192.168.1.3,_netdev,x-systemd.automount 0 0' | sudo tee --append /etc/fstab"))
     
     
-  if i == 1:
+  elif i == 1:
     node = request.XenVM("metadata")
     
 
-  if i == 2:
-    node = request.XenVM("storage")  
+  elif i == 2:
+    node = request.XenVM("storage")   
     node.addService(pg.Execute(shell="sh", command="sudo mkdir -m 755 /scratch"))
     
     # nfs service
@@ -80,27 +80,25 @@ for i in range(15):
     node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /etc/exports"))
     node.addService(pg.Execute(shell="sh", command="sudo exportfs -a"))
 
+  else:
+    node = request.XenVM("compute-" + str(i-2))
+    node.cores = 4
+    node.ram = 4096   
     
-    
-  node.disk_image = "urn:publicid:IDN+emulab.net+image+emulab-ops:CENTOS7-64-STD"
+    node.disk_image = "urn:publicid:IDN+emulab.net+image+emulab-ops:CENTOS7-64-STD"
   
-  iface = node.addInterface("if" + str(i))
-  iface.component_id = "eth1"
-  iface.addAddress(pg.IPv4Address(prefixForIP + str(i + 1), "255.255.255.0"))
-  link.addInterface(iface)
+   iface = node.addInterface("if" + str(i))
+   iface.component_id = "eth1"
+   iface.addAddress(pg.IPv4Address(prefixForIP + str(i + 1), "255.255.255.0"))
+   link.addInterface(iface)
   
-  node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/passwordless.sh"))
-  node.addService(pg.Execute(shell="sh", command="sudo /local/repository/passwordless.sh"))  
-  node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/ssh_setup.sh"))
-  node.addService(pg.Execute(shell="sh", command="sudo -H -u DT882578 bash -c '/local/repository/ssh_setup.sh'"))
-  node.addService(pg.Execute(shell="sh", command="sudo systemctl disable firewalld"))
-  node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c 'cp /local/repository/source/* /users/DT882578'"))
+   node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/passwordless.sh"))
+   node.addService(pg.Execute(shell="sh", command="sudo /local/repository/passwordless.sh"))  
+   node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/ssh_setup.sh"))
+   node.addService(pg.Execute(shell="sh", command="sudo -H -u DT882578 bash -c '/local/repository/ssh_setup.sh'"))
+   node.addService(pg.Execute(shell="sh", command="sudo systemctl disable firewalld"))
+   node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c 'cp /local/repository/source/* /users/DT882578'"))
   
-  
- if i > 2:
-   node = request.XenVM("compute-" + str(i-2))
-   node.cores = 2
-   node.ram = 4096
    node.addService(pg.Execute(shell="sh", command="sudo mkdir /scratch"))
    node.addService(pg.Execute(shell="sh", command="sudo mkdir /software"))
    node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /scratch"))
