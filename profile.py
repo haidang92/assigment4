@@ -99,22 +99,22 @@ for i in range(15):
   node.addService(pg.Execute(shell="sh", command="sudo systemctl disable firewalld"))
   node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c 'cp /local/repository/source/* /users/DT882578'"))
   
-   node.addService(pg.Execute(shell="sh", command="sudo mkdir /scratch"))
-   node.addService(pg.Execute(shell="sh", command="sudo mkdir /software"))
-   node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /scratch"))
-   node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /software"))
+  node.addService(pg.Execute(shell="sh", command="sudo mkdir /scratch"))
+  node.addService(pg.Execute(shell="sh", command="sudo mkdir /software"))
+  node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /scratch"))
+  node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /software"))
     
   # Mount 
-   node.addService(pg.Execute(shell="sh", command="sudo mount 192.168.1.3:/scratch /scratch"))
+  node.addService(pg.Execute(shell="sh", command="sudo mount 192.168.1.3:/scratch /scratch"))
    node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c \"echo '192.168.1.3:/scratch /scratch nfs defaults 0 0' >> /etc/fstab\""))
 
     # Mount
-   node.addService(pg.Execute(shell="sh", command="sudo mount 192.168.1.1:/software /software"))
-   node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c \"echo '192.168.1.1:/software /software nfs defaults 0 0' >> /etc/fstab\""))
+  node.addService(pg.Execute(shell="sh", command="sudo mount 192.168.1.1:/software /software"))
+  node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c \"echo '192.168.1.1:/software /software nfs defaults 0 0' >> /etc/fstab\""))
 
     # Add MPI to mpi_path
-   node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /local/repository/scripts/mpi_path_setup.sh"))
-   node.addService(pg.Execute(shell="sh", command="sudo -H -u DT882578 bash -c '/local/repository/scripts/mpi_path_setup.sh'"))
+  node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /local/repository/scripts/mpi_path_setup.sh"))
+  node.addService(pg.Execute(shell="sh", command="sudo -H -u DT882578 bash -c '/local/repository/scripts/mpi_path_setup.sh'"))
       
 
   
