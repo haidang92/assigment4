@@ -41,15 +41,14 @@ for i in range(15):
   if i == 0:
     node = request.XenVM("head")
     node.routable_control_ip = "true"
-    #One NFS is originated from the head node, and supports a shared directory called /software.
-    #One NFS is originated from the storage node, and supports a shared directory called /scratch  
     node.addService(pg.Execute(shell="sh", command="sudo mkdir -m 755 /software"))
     node.addService(pg.Execute(shell="sh", command="sudo mkdir /scratch"))   
     #nfs service
     node.addService(pg.Execute(shell="sh", command="sudo systemctl enable nfs-server.service"))
     node.addService(pg.Execute(shell="sh", command="sudo systemctl start nfs-server.service"))
     # add MPI
-    
+    node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/scripts/install_mpi.sh"))
+    node.addService(pg.Execute(shell="sh", command="sudo /local/repository/scripts/install_mpi.sh"))
     
     node.addService(pg.Execute(shell="sh", command="sudo rm /etc/exports"))
     node.addService(pg.Execute(shell="sh", command="sudo cp /local/repository/exports_head /etc/exports"))
@@ -61,18 +60,10 @@ for i in range(15):
     node.addService(pg.Execute(shell="sh", command="sudo mount 192.168.1.3:/scratch /scratch"))
     node.addService(pg.Execute(shell="sh", command="sudo echo '192.168.1.3:/scratch /scratch nfs4 rw,relatime,vers=4.1,rsize=131072,wsize=131072,namlen=255,hard,proto=tcp,port=0,timeo=600,retrans=2,sec=sys,local_lock=none,addr=192.168.1.3,_netdev,x-systemd.automount 0 0' | sudo tee --append /etc/fstab"))
     
-    node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/scripts/install_mpi.sh"))
-    node.addService(pg.Execute(shell="sh", command="sudo /local/repository/scripts/install_mpi.sh"))
     
   elif i == 1:
     node = request.XenVM("metadata")
-   
-
-  elif i == 2:
-    node = request.XenVM("storage")
     node.addService(pg.Execute(shell="sh", command="sudo mkdir -m 755 /scratch"))
-    node.addService(pg.Execute(shell="sh", command="sudo mkdir /software"))
-    node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /software"))
     
     # nfs service
     node.addService(pg.Execute(shell="sh", command="sudo systemctl enable nfs-server.service"))
@@ -82,27 +73,15 @@ for i in range(15):
     node.addService(pg.Execute(shell="sh", command="sudo cp /local/repository/exports_storage /etc/exports"))
     node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /etc/exports"))
     node.addService(pg.Execute(shell="sh", command="sudo exportfs -a"))
+
+  elif i == 2:
+    node = request.XenVM("storage")   
+
   else:
     node = request.XenVM("compute-" + str(i-2))
-    node.cores = 2
-    node.ram = 4096
-    node.addService(pg.Execute(shell="sh", command="sudo mkdir /scratch"))
-    node.addService(pg.Execute(shell="sh", command="sudo mkdir /software"))
-    node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /scratch"))
-    node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /software"))
-    node.addService(pg.Execute(shell="sh", command="sudo mount 192.168.1.3:/scratch /scratch"))
-    node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c \"echo '192.168.1.3:/scratch /scratch nfs defaults 0 0' >> /etc/fstab\""))
-
-    # Mount
-    node.addService(pg.Execute(shell="sh", command="sudo mount 192.168.1.1:/software /software"))
-    node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c \"echo '192.168.1.1:/software /software nfs defaults 0 0' >> /etc/fstab\""))
-
-    # Add MPI to mpi_path
-    node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /local/repository/scripts/mpi_path_setup.sh"))
-    node.addService(pg.Execute(shell="sh", command="sudo -H -u DT882578 bash -c '/local/repository/scripts/mpi_path_setup.sh'"))
-
+    node.cores = 4
+    node.ram = 4096   
     
-
   node.disk_image = "urn:publicid:IDN+emulab.net+image+emulab-ops:CENTOS7-64-STD"
   
   iface = node.addInterface("if" + str(i))
@@ -117,7 +96,31 @@ for i in range(15):
   node.addService(pg.Execute(shell="sh", command="sudo systemctl disable firewalld"))
   node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c 'cp /local/repository/source/* /users/DT882578'"))
   
- 
+  node.addService(pg.Execute(shell="sh", command="sudo mkdir /scratch"))
+  node.addService(pg.Execute(shell="sh", command="sudo mkdir /software"))
+  node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /scratch"))
+  node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /software"))
+    
+  # Mount 
+  node.addService(pg.Execute(shell="sh", command="sudo mount 192.168.1.3:/scratch /scratch"))
+  node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c \"echo '192.168.1.3:/scratch /scratch nfs defaults 0 0' >> /etc/fstab\""))
+
+    # Mount /software folder hosted on "head"
+  node.addService(pg.Execute(shell="sh", command="sudo mount 192.168.1.1:/software /software"))
+  node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c \"echo '192.168.1.1:/software /software nfs defaults 0 0' >> /etc/fstab\""))
+
+    # Add MPI to PATH
+  node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /local/repository/scripts/mpi_path_setup.sh"))
+  node.addService(pg.Execute(shell="sh", command="sudo -H -u DT882578 bash -c '/local/repository/scripts/mpi_path_setup.sh'"))
+      
+
+  
+  #One NFS is originated from the head node, and supports a shared directory called /software.
+  #One NFS is originated from the storage node, and supports a shared directory called /scratch  
+    
+
+      
+    
   
   
 # Print the RSpec to the enclosing page.
