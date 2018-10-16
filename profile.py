@@ -106,7 +106,7 @@ for i in range(15):
     
   # Mount 
   node.addService(pg.Execute(shell="sh", command="sudo mount 192.168.1.3:/scratch /scratch"))
-   node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c \"echo '192.168.1.3:/scratch /scratch nfs defaults 0 0' >> /etc/fstab\""))
+  node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c \"echo '192.168.1.3:/scratch /scratch nfs defaults 0 0' >> /etc/fstab\""))
 
     # Mount
   node.addService(pg.Execute(shell="sh", command="sudo mount 192.168.1.1:/software /software"))
