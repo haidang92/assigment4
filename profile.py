@@ -84,7 +84,7 @@ for i in range(15):
     node.addService(pg.Execute(shell="sh", command="sudo cp /local/repository/exports_head /etc/exports"))
     node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /etc/exports"))
     node.addService(pg.Execute(shell="sh", command="sudo exportfs -a"))
-     node.addService(pg.Execute(shell="sh", command="sleep 2m"))
+    node.addService(pg.Execute(shell="sh", command="sleep 2m"))
     
     # Mount /scratch folder hosted on "storage"
     node.addService(pg.Execute(shell="sh", command="sudo mount 192.168.1.3:/scratch /scratch"))
@@ -121,11 +121,11 @@ for i in range(15):
 
     # Mount /software folder hosted on "head"
     node.addService(pg.Execute(shell="sh", command="sudo mount 192.168.1.1:/software /software"))
-    node.addService(pg.Execute(shell="sh", command="sudo su nq666287 -c \"echo '192.168.1.1:/software /software nfs defaults 0 0' >> /etc/fstab\""))
+    node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c \"echo '192.168.1.1:/software /software nfs defaults 0 0' >> /etc/fstab\""))
 
     # Add MPI to PATH
     node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /local/repository/scripts/mpi_path_setup.sh"))
-    node.addService(pg.Execute(shell="sh", command="sudo -H -u nq666287 bash -c '/local/repository/scripts/mpi_path_setup.sh'"))
+    node.addService(pg.Execute(shell="sh", command="sudo -H -u DT882578 bash -c '/local/repository/scripts/mpi_path_setup.sh'"))
       
       
     
