@@ -37,43 +37,14 @@ prefixForIP = "192.168.1."
 link = request.LAN("lan")
 
 for i in range(15):
-  
-  if i == 0:
-    node = request.XenVM("head")
-    node.routable_control_ip = "true"    
-    
-  elif i == 1:
-    node = request.XenVM("metadata")
-
-  elif i == 2:
-    node = request.XenVM("storage")   
-
-  else:
-    node = request.XenVM("compute-" + str(i-2))
-    node.cores = 4
-    node.ram = 4096   
-    
-  node.disk_image = "urn:publicid:IDN+emulab.net+image+emulab-ops:CENTOS7-64-STD"
-  
-  iface = node.addInterface("if" + str(i))
-  iface.component_id = "eth1"
-  iface.addAddress(pg.IPv4Address(prefixForIP + str(i + 1), "255.255.255.0"))
-  link.addInterface(iface)
-  
-  node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/passwordless.sh"))
-  node.addService(pg.Execute(shell="sh", command="sudo /local/repository/passwordless.sh"))  
-  node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/ssh_setup.sh"))
-  node.addService(pg.Execute(shell="sh", command="sudo -H -u DT882578 bash -c '/local/repository/ssh_setup.sh'"))
-  node.addService(pg.Execute(shell="sh", command="sudo systemctl disable firewalld"))
-  node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c 'cp /local/repository/source/* /users/DT882578'"))
-  
   #One NFS is originated from the head node, and supports a shared directory called /software.
   #One NFS is originated from the storage node, and supports a shared directory called /scratch
   if i == 0:
+    node = request.XenVM("head")
+    node.routable_control_ip = "true"   
     node.addService(pg.Execute(shell="sh", command="sudo yum -y install nfs-utils"))
     node.addService(pg.Execute(shell="sh", command="sudo mkdir -m 755 /software"))
     node.addService(pg.Execute(shell="sh", command="sudo mkdir /scratch"))   
-    
     
     #nfs service
     node.addService(pg.Execute(shell="sh", command="sudo systemctl enable nfs-server.service"))
@@ -92,8 +63,11 @@ for i in range(15):
     node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/scripts/install_mpi.sh"))
     node.addService(pg.Execute(shell="sh", command="sudo /local/repository/scripts/install_mpi.sh"))
     
-  if i == 2: # Storage
-    # share
+  elif i == 1:
+    node = request.XenVM("metadata")
+
+  elif i == 2:
+    node = request.XenVM("storage")   
     node.addService(pg.Execute(shell="sh", command="sudo mkdir /scratch"))
     node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /scratch"))
     
@@ -106,7 +80,27 @@ for i in range(15):
     node.addService(pg.Execute(shell="sh", command="sudo cp /local/repository/exports_storage /etc/exports"))
     node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /etc/exports"))
     node.addService(pg.Execute(shell="sh", command="sudo exportfs -a"))
+
+  else:
+    node = request.XenVM("compute-" + str(i-2))
+    node.cores = 4
+    node.ram = 4096   
     
+  node.disk_image = "urn:publicid:IDN+emulab.net+image+emulab-ops:CENTOS7-64-STD"
+  
+  iface = node.addInterface("if" + str(i))
+  iface.component_id = "eth1"
+  iface.addAddress(pg.IPv4Address(prefixForIP + str(i + 1), "255.255.255.0"))
+  link.addInterface(iface)
+  
+  node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/passwordless.sh"))
+  node.addService(pg.Execute(shell="sh", command="sudo /local/repository/passwordless.sh")) 
+  node.addService(pg.Execute(shell="sh", command="sudo systemctl disable firewalld"))
+  node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/ssh_setup.sh"))
+  node.addService(pg.Execute(shell="sh", command="sudo -H -u DT882578 bash -c '/local/repository/ssh_setup.sh'"))
+  node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c 'cp /local/repository/source/* /users/DT882578'"))
+  
+ 
   if i > 2: #3-12
     
     node.addService(pg.Execute(shell="sh", command="sudo mkdir /scratch"))
