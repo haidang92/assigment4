@@ -109,7 +109,7 @@ for i in range(15):
     node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /software"))
     
     node.addService(pg.Execute(shell="sh", command="sudo yum -y install nfs-utils"))
-    node.addService(pg.Execute(shell="sh", command="sleep 20m"))
+    node.addService(pg.Execute(shell="sh", command="sleep 2m"))
     
     node.addService(pg.Execute(shell="sh", command="sudo mount 192.168.1.3:/scratch /scratch"))
     node.addService(pg.Execute(shell="sh", command="sudo mount 192.168.1.1:/software /software"))
