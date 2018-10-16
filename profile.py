@@ -70,7 +70,7 @@ for i in range(15):
   #One NFS is originated from the head node, and supports a shared directory called /software.
   #One NFS is originated from the storage node, and supports a shared directory called /scratch
   if i == 0:
- 
+    node.addService(pg.Execute(shell="sh", command="sudo yum -y install nfs-utils"))
     node.addService(pg.Execute(shell="sh", command="sudo mkdir -m 755 /software"))
     node.addService(pg.Execute(shell="sh", command="sudo mkdir /scratch"))   
     
@@ -93,8 +93,9 @@ for i in range(15):
     node.addService(pg.Execute(shell="sh", command="sudo /local/repository/scripts/install_mpi.sh"))
     
   if i == 2: # Storage
-    # Create /scratch shared folder
-    node.addService(pg.Execute(shell="sh", command="sudo mkdir -m 755 /scratch"))
+    # share
+    node.addService(pg.Execute(shell="sh", command="sudo mkdir /scratch"))
+    node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /scratch"))
     
     # nfs service
     node.addService(pg.Execute(shell="sh", command="sudo systemctl enable nfs-server.service"))
@@ -106,21 +107,22 @@ for i in range(15):
     node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /etc/exports"))
     node.addService(pg.Execute(shell="sh", command="sudo exportfs -a"))
     
-  if i > 2: 
+  if i > 2: #3-12
+    
     node.addService(pg.Execute(shell="sh", command="sudo mkdir /scratch"))
     node.addService(pg.Execute(shell="sh", command="sudo mkdir /software"))
     node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /scratch"))
     node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /software"))
     
+    node.addService(pg.Execute(shell="sh", command="sudo yum -y install nfs-utils"))
+    node.addService(pg.Execute(shell="sh", command="sleep 20m"))
     
     node.addService(pg.Execute(shell="sh", command="sudo mount 192.168.1.3:/scratch /scratch"))
-    node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c \"echo '192.168.1.3:/scratch /scratch nfs defaults 0 0' >> /etc/fstab\""))
-
-    # Mount 
     node.addService(pg.Execute(shell="sh", command="sudo mount 192.168.1.1:/software /software"))
     node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c \"echo '192.168.1.1:/software /software nfs defaults 0 0' >> /etc/fstab\""))
-
+    node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c \"echo '192.168.1.3:/scratch /scratch nfs defaults 0 0' >> /etc/fstab\""))
     # Add MPI
+    
     node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /local/repository/scripts/mpi_path_setup.sh"))
     node.addService(pg.Execute(shell="sh", command="sudo -H -u DT882578 bash -c '/local/repository/scripts/mpi_path_setup.sh'"))
       
