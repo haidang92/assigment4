@@ -39,6 +39,10 @@ link = request.LAN("lan")
 for i in range(15):
   #One NFS is originated from the head node, and supports a shared directory called /software.
   #One NFS is originated from the storage node, and supports a shared directory called /scratch
+  node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/scripts/passwordless.sh"))
+  node.addService(pg.Execute(shell="sh", command="sudo /local/repository/scripts/passwordless.sh")) 
+  
+  node.addService(pg.Execute(shell="sh", command="sudo systemctl disable firewalld"))
   if i == 0:
     node = request.XenVM("head")
     node.routable_control_ip = "true"   
@@ -92,11 +96,10 @@ for i in range(15):
   iface.component_id = "eth1"
   iface.addAddress(pg.IPv4Address(prefixForIP + str(i + 1), "255.255.255.0"))
   link.addInterface(iface)
+  #node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/scripts/passwordless.sh"))
+  #node.addService(pg.Execute(shell="sh", command="sudo /local/repository/scripts/passwordless.sh")) 
   
-  node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/scripts/passwordless.sh"))
-  node.addService(pg.Execute(shell="sh", command="sudo /local/repository/scripts/passwordless.sh")) 
-  
-  node.addService(pg.Execute(shell="sh", command="sudo systemctl disable firewalld"))
+  #node.addService(pg.Execute(shell="sh", command="sudo systemctl disable firewalld"))
   
   #node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/ssh_setup.sh"))
   #node.addService(pg.Execute(shell="sh", command="sudo -H -u DT882578 bash -c '/local/repository/ssh_setup.sh'"))
