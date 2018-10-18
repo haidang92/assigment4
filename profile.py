@@ -67,15 +67,16 @@ for i in range(15):
     node = request.XenVM("metadata")
 
   elif i == 2:
-    node = request.XenVM("storage")   
-    node.addService(pg.Execute(shell="sh", command="sudo mkdir /scratch"))
-    node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /scratch"))
+    node = request.XenVM("storage")  
     
-    # nfs service
+    node.addService(pg.Execute(shell="sh", command="sudo mkdir -m 755 /scratch"))
+    
+   
     node.addService(pg.Execute(shell="sh", command="sudo systemctl enable nfs-server.service"))
     node.addService(pg.Execute(shell="sh", command="sudo systemctl start nfs-server.service"))
     
     
+  
     node.addService(pg.Execute(shell="sh", command="sudo rm /etc/exports"))
     node.addService(pg.Execute(shell="sh", command="sudo cp /local/repository/exports_storage /etc/exports"))
     node.addService(pg.Execute(shell="sh", command="sudo chmod 777 /etc/exports"))
