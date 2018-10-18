@@ -94,8 +94,8 @@ for i in range(15):
   iface.addAddress(pg.IPv4Address(prefixForIP + str(i + 1), "255.255.255.0"))
   link.addInterface(iface)
   
-  node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/passwordless.sh"))
-  node.addService(pg.Execute(shell="sh", command="sudo /local/repository/passwordless.sh")) 
+  node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/scripts/passwordless.sh"))
+  node.addService(pg.Execute(shell="sh", command="sudo /local/repository/scripts/passwordless.sh")) 
   
   node.addService(pg.Execute(shell="sh", command="sudo chmod 755 /local/repository/ssh_setup.sh"))
   node.addService(pg.Execute(shell="sh", command="sudo -H -u DT882578 bash -c '/local/repository/ssh_setup.sh'"))
