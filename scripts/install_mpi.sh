@@ -9,7 +9,7 @@ cd openmpi-3.1.2
 sudo ./configure --prefix=/software
 sudo make
 sudo make all install
-echo "export PATH='$PATH:/software/bin'" >> /users/gb773994/.bashrc
+echo "export PATH='$PATH:/software/bin'" >> /users/DT882578/.bashrc
 echo "export LD_LIBRARY_PATH='$LD_LIBRARY_PATH:/software/lib/'" >> /users/DT882578/.bashrc
 cd ..
 sudo rm -Rf openmpi-3.1.2
