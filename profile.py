@@ -54,6 +54,8 @@ for i in range(15):
     #nfs service
     node.addService(pg.Execute(shell="sh", command="sudo systemctl enable nfs-server.service"))
     node.addService(pg.Execute(shell="sh", command="sudo systemctl start nfs-server.service"))
+    
+
       
     node.addService(pg.Execute(shell="sh", command="sudo rm /etc/exports"))
     node.addService(pg.Execute(shell="sh", command="sudo cp /local/repository/exports_head /etc/exports"))
@@ -80,6 +82,7 @@ for i in range(15):
     node.addService(pg.Execute(shell="sh", command="sudo /local/repository/scripts/passwordless.sh")) 
   
     node.addService(pg.Execute(shell="sh", command="sudo systemctl disable firewalld"))
+    node.addService(pg.Execute(shell="sh", command="sudo su DT882578 -c 'sudo cp /local/repository/source/* /scratch'"))
     
     node.addService(pg.Execute(shell="sh", command="sudo mkdir -m 755 /scratch"))
     
