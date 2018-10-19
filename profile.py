@@ -45,7 +45,7 @@ for i in range(15):
     node = request.XenVM("storage")
   else:
     node = request.XenVM("compute" + str(i-2))
-    node.cores = 2
+    node.cores = 4
     node.ram = 4096
     
   node.disk_image = "urn:publicid:IDN+emulab.net+image+emulab-ops:CENTOS7-64-STD"
